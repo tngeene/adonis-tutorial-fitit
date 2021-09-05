@@ -1,8 +1,6 @@
-# Block Parties BACKEND API
+# FItIt BACKEND API
 
-> Main Adonis js code base powering block parties
-
-`Transacting together is easy with Block Parties!`
+> Main Adonis js code base FitIt
 
 1. [Requirements](#requirements)
 2. [Installation](#installing-on-local-machine)
