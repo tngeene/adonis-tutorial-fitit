@@ -36,15 +36,6 @@ $ node ace key:generate
 #run migrations
 $ node ace migration:run
 
-#seed the database
-$ node ace db:seed
-
-
-> Note: make sure you have properly configured the CONTRACT_EMAIL and CONTRACT_PASSWORD inside
-the .env file before seeding the database.
-
-
-
 # serve on localhost:3333
  $ node ace serve --watch
 
