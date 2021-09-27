@@ -1,6 +1,6 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import User from 'App/Models/User'
 import { rules, schema } from '@ioc:Adonis/Core/Validator'
+import User from 'App/Models/User'
 
 export default class AuthController {
   public async register({ request, response }: HttpContextContract) {
@@ -12,7 +12,12 @@ export default class AuthController {
     })
     const data = await request.validate({ schema: validations })
     const user = await User.create(data)
-    return response.created(user)
+    // send verification email
+    user?.sendVerificationEmail()
+
+    return response
+      .status(201)
+      .send({ success: 'Registration successful, check your email inbox for a verification email' })
   }
 
   //   login function
@@ -24,6 +29,7 @@ export default class AuthController {
       const token = await auth.use('api').attempt(email, password, {
         expiresIn: '24hours',
       })
+      console.log(token)
       return token.toJSON()
     } catch {
       return response

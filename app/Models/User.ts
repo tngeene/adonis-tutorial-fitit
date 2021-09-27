@@ -1,7 +1,9 @@
-import { DateTime } from 'luxon'
+import Mail from '@ioc:Adonis/Addons/Mail'
+import Env from '@ioc:Adonis/Core/Env'
 import Hash from '@ioc:Adonis/Core/Hash'
-import { column, beforeSave, BaseModel } from '@ioc:Adonis/Lucid/Orm'
-
+import Route from '@ioc:Adonis/Core/Route'
+import { BaseModel, beforeSave, column } from '@ioc:Adonis/Lucid/Orm'
+import { DateTime } from 'luxon'
 export default class User extends BaseModel {
   @column({ isPrimary: true })
   public id: number
@@ -35,5 +37,22 @@ export default class User extends BaseModel {
     if (user.$dirty.password) {
       user.password = await Hash.make(user.password)
     }
+  }
+
+  public async sendVerificationEmail() {
+    const appDomain = Env.get('APP_URL')
+    const appName = Env.get('APP_NAME')
+    const currentYear = new Date().getFullYear()
+    const url = Route.builder()
+      .params({ email: this.email })
+      .prefixUrl(appDomain)
+      .makeSigned('verifyEmail', { expiresIn: '24hours' })
+    Mail.send((message) => {
+      message
+        .from(Env.get('DEFAULT_FROM_EMAIL'))
+        .to(this.email)
+        .subject('Please verify your email')
+        .htmlView('emails/auth/verify', { user: this, url, appName, appDomain, currentYear })
+    })
   }
 }
