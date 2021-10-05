@@ -1,3 +1,4 @@
+import Event from '@ioc:Adonis/Core/Event'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { rules, schema } from '@ioc:Adonis/Core/Validator'
 import User from 'App/Models/User'
@@ -11,9 +12,16 @@ export default class AuthController {
       username: schema.string({}, [rules.unique({ table: 'users', column: 'username' })]),
     })
     const data = await request.validate({ schema: validations })
-    const user = await User.create(data)
+    const newUser = await User.create(data)
+
     // send verification email
-    user?.sendVerificationEmail()
+    // * remove comment to use the model function user model file
+    // newUser?.sendVerificationEmail()
+
+    // * comment out to use the use model function above if you wish
+    Event.emit('new:user', {
+      newUser,
+    })
 
     return response
       .status(201)
@@ -29,7 +37,6 @@ export default class AuthController {
       const token = await auth.use('api').attempt(email, password, {
         expiresIn: '24hours',
       })
-      console.log(token)
       return token.toJSON()
     } catch {
       return response
