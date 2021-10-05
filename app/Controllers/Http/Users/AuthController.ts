@@ -14,6 +14,11 @@ export default class AuthController {
     const data = await request.validate({ schema: validations })
     const newUser = await User.create(data)
 
+    // send verification email
+    // * remove comment to use the model function user model file
+    // newUser?.sendVerificationEmail()
+
+    // * comment out to use the use model function above if you wish
     Event.emit('new:user', {
       newUser,
     })
